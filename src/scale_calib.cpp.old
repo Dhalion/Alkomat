@@ -1,0 +1,60 @@
+#include <Arduino.h>
+#include "HX711.h"
+
+// HX711 circuit wiring
+const int LOADCELL_DOUT_PIN = D2;
+const int LOADCELL_SCK_PIN = D3;
+
+HX711 scale;
+long reading = 0;
+
+void setup()
+{
+	Serial.begin(115200);
+	scale.begin(LOADCELL_DOUT_PIN, LOADCELL_SCK_PIN);
+
+	while (!scale.is_ready())
+	{
+		Serial.println("Scale is not ready.");
+		delay(100);
+	}
+
+	scale.set_scale();
+	scale.tare();
+}
+
+void loop()
+{
+	reading = scale.get_units(5);
+	Serial.println("Place known Weight on Scale...\n");
+	Serial.println(reading);
+	while (scale.get_units(5) - reading > -200) {
+		Serial.println(scale.get_units(5) - reading);
+	}
+	reading = scale.get_units(10);
+	Serial.PRINT("GET UNITS:\t%ld\n", reading);
+	Serial.PRINT("Assuming Mass of 154g; This results in factor %ld\n", reading / 154);
+	Serial.PRINT("Calibrating with recorded values...\n");
+
+	Serial.PRINT("Remove Object from scale\n");
+	delay(1000);
+	reading = scale.get_units(5);
+	delay(100);
+	Serial.println(reading);
+
+	while (reading - scale.get_units(5) > -500) {
+		Serial.println(reading - scale.get_units(5));
+	}
+	
+
+
+	scale.set_scale(reading / 154);
+	scale.tare();
+
+	while (1)
+	{
+		Serial.PRINT("Scale UNT: %fg\r", scale.get_units(5));
+	}
+
+	delay(100);
+}
