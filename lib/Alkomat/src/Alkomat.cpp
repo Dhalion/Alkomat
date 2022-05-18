@@ -194,6 +194,7 @@ void Alkomat::pourDrink(uint8_t amount)
         Serial.printf_P("Left to fill: %ld\r", _endWeight - _currentWeight);
         _currentWeight = -this->_scale.get_units(5);
     }
+    delay(100);
     valve.close();
     PRINT("[#] Closing Valve.\n");
 }
@@ -237,6 +238,7 @@ void Alkomat::startServer()
     _server->on("/scale", endpointScale);
 
     _server->onNotFound(handleNotFound);
+    _server->enableCORS(true);
     _server->begin();
 }
 

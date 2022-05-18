@@ -16,6 +16,8 @@
 #include <ESP8266WiFi.h>
 #include <ESP8266WebServer.h>
 #include <ArduinoJson.h>
+// #include <ESPAsyncWebServer.h>   	//Local WebServer used to serve the configuration portal
+// #include <ESPAsyncWiFiManager.h>	//https://github.com/tzapu/WiFiManager WiFi Configuration Magic
 
 
 /**----------------------------------------------
