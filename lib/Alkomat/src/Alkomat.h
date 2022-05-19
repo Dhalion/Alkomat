@@ -10,14 +10,14 @@
 #pragma once
 
 #include <Arduino.h>
+#include <ESP8266WiFi.h>
 #include <Servo.h>
 #include "HX711.h"
-#include <WiFiManager.h> //https://github.com/tzapu/WiFiManager WiFi Configuration Magic
-#include <ESP8266WiFi.h>
-#include <ESP8266WebServer.h>
+#include <ESPAsyncWiFiManager.h>          //https://github.com/tzapu/WiFiManager WiFi Configuration Magic
+#include <ESPAsyncWebServer.h>     //Local WebServer used to serve the configuration portal
+// #include <ESP8266WebServer.h>
 #include <ArduinoJson.h>
-// #include <ESPAsyncWebServer.h>   	//Local WebServer used to serve the configuration portal
-// #include <ESPAsyncWiFiManager.h>	//https://github.com/tzapu/WiFiManager WiFi Configuration Magic
+
 
 
 /**----------------------------------------------
@@ -97,7 +97,7 @@ private:
 
 	// ## WiFi Stuff ##
 	uint16_t _port = 80;
-    ESP8266WebServer* _server;
+    // ESP8266WebServer* _server;
     WiFiClient _client;
     String _header;
     String _message;

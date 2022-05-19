@@ -9,7 +9,7 @@
 
 #include "Alkomat.h"
 
-ESP8266WebServer *server_p;
+// ESP8266WebServer *server_p;
 Alkomat *alkomat_p;
 
 /**--------------------------------------------
@@ -227,183 +227,185 @@ void Alkomat::pourAmount(uint8_t amount, Valve valve)
 void Alkomat::startServer()
 {
     Serial.println("Starting Server");
-    _server = new ESP8266WebServer(80);
-    // Setting cross reference pointers
-    server_p = _server;
-    _server->on("/test", endpointTest);
-    _server->on("/status", endpointStatus);
-    _server->on("/pour", endpointPour);
-    _server->on("/valve", endpointValve);
-    _server->on("/calibrate", endpointCalibrateScale);
-    _server->on("/scale", endpointScale);
+    // _server = new ESP8266WebServer(80);
+    // // Setting cross reference pointers
+    // server_p = _server;
+    // _server->on("/test", endpointTest);
+    // _server->on("/status", endpointStatus);
+    // _server->on("/pour", endpointPour);
+    // _server->on("/valve", endpointValve);
+    // _server->on("/calibrate", endpointCalibrateScale);
+    // _server->on("/scale", endpointScale);
 
-    _server->onNotFound(handleNotFound);
-    _server->enableCORS(true);
-    _server->begin();
+    // _server->onNotFound(handleNotFound);
+    // _server->enableCORS(true);
+    // _server->begin();
 }
 
 void Alkomat::initWifi()
 {
     Serial.println("INIT WIFI");
     WiFi.setHostname(HOSTNAME);
-    WiFiManager wifiManager;
+    AsyncWebServer server(80);
+    DNSServer dns;
+    AsyncWiFiManager wifiManager(&server,&dns);
     wifiManager.autoConnect("alkomat");
 }
 
 void Alkomat::handleWiFi()
 {
-    _server->handleClient();
+    // _server->handleClient();
 }
 
 /**------------------------------------------------------------------------
  *                           URL ENDPOINTS
  *------------------------------------------------------------------------**/
 
-void endpointTest()
-{
-    server_p->send(200, "text/plain", "200: OK");
-    Serial.println("+++ ENDPOINT TEST +++");
-}
+// void endpointTest()
+// {
+//     server_p->send(200, "text/plain", "200: OK");
+//     Serial.println("+++ ENDPOINT TEST +++");
+// }
 
-void handleNotFound()
-{
-    server_p->send(404, "text/plain", "404: Not found"); // Send HTTP status 404 (Not Found) when there's no handler for the URI in the request
-}
+// void handleNotFound()
+// {
+//     server_p->send(404, "text/plain", "404: Not found"); // Send HTTP status 404 (Not Found) when there's no handler for the URI in the request
+// }
 
-void endpointStatus()
-{
-    server_p->send(200, "application/json", "{\"status\": \"healthy\"}"); // Send HTTP status 404 (Not Found) when there's no handler for the URI in the request
-}
+// void endpointStatus()
+// {
+//     server_p->send(200, "application/json", "{\"status\": \"healthy\"}"); // Send HTTP status 404 (Not Found) when there's no handler for the URI in the request
+// }
 
-void endpointPour()
-{
-    /**----------------------
-     *    URL Parameters:
-     *      - amount    (mandatory)
-     *      - valve     (either this or drink)
-     *      - drink     (either this or valve)
-     *------------------------**/
+// void endpointPour()
+// {
+//     /**----------------------
+//      *    URL Parameters:
+//      *      - amount    (mandatory)
+//      *      - valve     (either this or drink)
+//      *      - drink     (either this or valve)
+//      *------------------------**/
 
-    //*     Variables       *//
-    String amount;
-    String valve;
-    String drink;
-    StaticJsonDocument<200> json;
-    String response;
+//     //*     Variables       *//
+//     String amount;
+//     String valve;
+//     String drink;
+//     StaticJsonDocument<200> json;
+//     String response;
 
-    // Check if params are not empty
-    if (server_p->args() < 1)
-    {
-        return;
-    }
-    // Check if amount is given
-    if (!server_p->hasArg("amount"))
-    {
-        return;
-    }
-    amount = server_p->arg("amount");
+//     // Check if params are not empty
+//     if (server_p->args() < 1)
+//     {
+//         return;
+//     }
+//     // Check if amount is given
+//     if (!server_p->hasArg("amount"))
+//     {
+//         return;
+//     }
+//     amount = server_p->arg("amount");
 
-    // Check if valve or drink is given
-    if (!(server_p->hasArg("drink") || server_p->hasArg("valve")))
-    {
-        return;
-    }
+//     // Check if valve or drink is given
+//     if (!(server_p->hasArg("drink") || server_p->hasArg("valve")))
+//     {
+//         return;
+//     }
 
-    // Reading parameters
-    valve = server_p->arg("valve");
-    drink = server_p->arg("drink");
+//     // Reading parameters
+//     valve = server_p->arg("valve");
+//     drink = server_p->arg("drink");
 
-    // Assemble response JSON
-    json["drink"] = drink;
-    json["valve"] = valve;
-    json["amount"] = amount;
+//     // Assemble response JSON
+//     json["drink"] = drink;
+//     json["valve"] = valve;
+//     json["amount"] = amount;
 
-    serializeJson(json, response);
+//     serializeJson(json, response);
 
-    alkomat_p->pourDrink(amount.toInt());
+//     alkomat_p->pourDrink(amount.toInt());
 
-    server_p->send(200, "application/json", response);
-}
+//     server_p->send(200, "application/json", response);
+// }
 
-void endpointValve()
-{
-    int valve;
-    String action;
-    StaticJsonDocument<200> json;
-    String response;
+// void endpointValve()
+// {
+//     int valve;
+//     String action;
+//     StaticJsonDocument<200> json;
+//     String response;
 
-    // Check if params are not empty
-    if (server_p->args() < 1)
-    {
-        return;
-    }
-    // Check if amount is given
-    if (!server_p->hasArg("valve"))
-    {
-        return;
-    }
-    valve = server_p->arg("valve").toInt();
+//     // Check if params are not empty
+//     if (server_p->args() < 1)
+//     {
+//         return;
+//     }
+//     // Check if amount is given
+//     if (!server_p->hasArg("valve"))
+//     {
+//         return;
+//     }
+//     valve = server_p->arg("valve").toInt();
 
-    if (!server_p->hasArg("valve"))
-    {
-        return;
-    }
-    action = server_p->arg("action");
+//     if (!server_p->hasArg("valve"))
+//     {
+//         return;
+//     }
+//     action = server_p->arg("action");
 
-    if (action == "open")
-    {
-        alkomat_p->_valves[valve].open();
-    }
-    else if (action == "close")
-    {
-        alkomat_p->_valves[valve].close();
-    }
+//     if (action == "open")
+//     {
+//         alkomat_p->_valves[valve].open();
+//     }
+//     else if (action == "close")
+//     {
+//         alkomat_p->_valves[valve].close();
+//     }
 
-    json["valve"] = valve;
-    json["action"] = action;
+//     json["valve"] = valve;
+//     json["action"] = action;
 
-    serializeJson(json, response);
+//     serializeJson(json, response);
 
-    server_p->send(200, "application/json", response);
-}
+//     server_p->send(200, "application/json", response);
+// }
 
-void endpointCalibrateScale()
-{
-    int _knownWeight = 0;
+// void endpointCalibrateScale()
+// {
+//     int _knownWeight = 0;
 
-    // Check if params are not empty
-    if (server_p->args() < 1)
-    {
-        return;
-    }
-    // Check if amount is given
-    if (!server_p->hasArg("weight"))
-    {
-        return;
-    }
-    _knownWeight = server_p->arg("weight").toFloat();
+//     // Check if params are not empty
+//     if (server_p->args() < 1)
+//     {
+//         return;
+//     }
+//     // Check if amount is given
+//     if (!server_p->hasArg("weight"))
+//     {
+//         return;
+//     }
+//     _knownWeight = server_p->arg("weight").toFloat();
 
-    alkomat_p->calibrateScale(_knownWeight);
+//     alkomat_p->calibrateScale(_knownWeight);
 
-    server_p->send(200);
-}
+//     server_p->send(200);
+// }
 
-void endpointScale()
-{
-    long _weight = 0;
-    StaticJsonDocument<200> json;
-    String response;
+// void endpointScale()
+// {
+//     long _weight = 0;
+//     StaticJsonDocument<200> json;
+//     String response;
 
-    if (!alkomat_p->_scale.is_ready())
-    {
-        server_p->send(503);
-        return;
-    }
-    _weight = -alkomat_p->_scale.get_units(5);
+//     if (!alkomat_p->_scale.is_ready())
+//     {
+//         server_p->send(503);
+//         return;
+//     }
+//     _weight = -alkomat_p->_scale.get_units(5);
 
-    json["weight"] = _weight;
+//     json["weight"] = _weight;
 
-    serializeJson(json, response);
+//     serializeJson(json, response);
 
-    server_p->send(200, "application/json", response);
-}
+//     server_p->send(200, "application/json", response);
+// }

@@ -1,6 +1,7 @@
 {
     "files.associations": {
         "cstdio": "cpp",
-        "system_error": "cpp"
+        "system_error": "cpp",
+        "servo.h": "c"
     }
 }
