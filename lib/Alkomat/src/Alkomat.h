@@ -52,6 +52,12 @@
 #define PRINT(s)
 #endif
 
+
+//* Forward declarations *//
+class Valve;
+class Alkomat;
+
+
 enum valve_state_t
 {
 	closed,
@@ -64,6 +70,19 @@ enum drink_t
 	drink2,
 	drink3
 };
+
+typedef enum action_t{
+	pour
+};
+
+typedef struct task_t {
+	bool		done;
+	action_t 	action;
+	// Skip Valve for now
+	// Valve 		valve;
+	int			valve;		// Just use Index
+	int			amount;
+} task_t;
 
 /**--------------------------------------------
  *               VALVE CLASS
@@ -97,7 +116,7 @@ private:
 
 	// ## WiFi Stuff ##
 	uint16_t _port = 80;
-    // ESP8266WebServer* _server;
+    AsyncWebServer* _server;
     WiFiClient _client;
     String _header;
     String _message;
@@ -106,8 +125,9 @@ private:
 
 public:
 	Alkomat();
-	HX711 _scale;
-	Valve _valves[10];
+	HX711 	_scale;
+	Valve 	_valves[10];
+	task_t	_task;
 	void addValve(uint8_t pin, drink_t drink);
 	void changeDrink(Valve valve, drink_t newDrink);
 	void pourDrink(uint8_t amount);
@@ -121,14 +141,14 @@ public:
 	void initWifi();
     void startServer();
     void handleWiFi();
-
+	void handleCallbacks();
 };
 
 
-void endpointTest();
-void handleNotFound();
-void endpointStatus();
-void endpointPour();
-void endpointValve();
-void endpointCalibrateScale();
-void endpointScale();
+void endpointTest(AsyncWebServerRequest *request);
+void handleNotFound(AsyncWebServerRequest *request);
+void endpointStatus(AsyncWebServerRequest *request);
+void endpointPour(AsyncWebServerRequest *request);
+void endpointValve(AsyncWebServerRequest *request);
+void endpointCalibrateScale(AsyncWebServerRequest *request);
+void endpointScale(AsyncWebServerRequest *request);
