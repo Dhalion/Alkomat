@@ -4,8 +4,10 @@ const base_url = 'http://alkomat/'
 async function getStatus() {
     const response = await fetch(base_url + "status");
     const data = await response.json();
-    // console.log(data);
-    displayStatus(data.status)
+    if (data.status.toLowerCase() === "healthy") {
+        displayStatus(data.status)
+    }
+    else {displayStatus("Disconnected")}
 
 }
 

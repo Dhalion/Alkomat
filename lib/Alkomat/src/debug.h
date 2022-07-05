@@ -1,5 +1,7 @@
 #pragma once
 
+#define DEBUG
+
 #ifdef DEBUG 
   #define DebugPrint(...)  \
         Serial.print(millis());     \

@@ -14,6 +14,6 @@ void setup()
 
 void loop()
 {
-	Serial.println(Alkomat::readScale());
-	delay(500);
+	Serial.println(Alkomat::readAverageScale());
+	delay(100);
 }
