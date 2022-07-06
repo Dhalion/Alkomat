@@ -25,6 +25,7 @@
 #define LOADCELL_DOUT_PIN D2
 #define LOADCELL_SCK_PIN D3
 #define ROLLING_AVG_N   5
+#define SCALE_CALIBRATION_FACTOR -973
 
 // Command codes to place in queue
 enum CommandType {

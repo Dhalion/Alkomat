@@ -105,6 +105,15 @@ function calibration_button() {
 }
 
 
+function tare_button() {
+    console.log("Tare");
+
+    let request = base_url + "tare";
+
+    fetch(request);
+}
+
+
 setInterval(getStatus, 1000);
 setInterval(updateLogs, 300);
 setInterval(getWeight, 200);

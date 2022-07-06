@@ -17,14 +17,14 @@ void Alkomat::initScale()
         delay(200);
         DebugPrint(".");
     }
-    // scale.set_scale(97235);
+    scale.set_scale(SCALE_CALIBRATION_FACTOR);
     averageReading.begin();
     DebugPrintln("\nScale initialized.");
 }
 
 long Alkomat::readScale()
 {
-    return -scale.get_units(); // Scale mounted upside down so *-1
+    return scale.get_units() - 100; // -100g Correction
 }
 
 long Alkomat::readAverageScale()
@@ -67,7 +67,8 @@ void Alkomat::handle()
         }
 
         // Queue should be empty now
-        if (commandQueue.getCount() > 0) {
+        if (commandQueue.getCount() > 0)
+        {
             // Force flush if not already empty
             DebugPrintln("Queue not empty! Clearing...");
             commandQueue.flush();
@@ -89,11 +90,15 @@ void Alkomat::addCommandToQueue(Command command)
 
 void Alkomat::calibrateScale(int knownWeight)
 {
+    long result, start;
+    int timer;
+
     WiFiManagement::addToDebugLog("=== Calibration Start ===");
     Serial.println("=== Calibration Start ===");
     WiFiManagement::addToDebugLog("# Remove any Weights on the scale!");
     Serial.println("# Remove any Weights on the scale!");
-    delay(5000);
+
+    DebugPrintln("Taring...");
     scale.tare();
 
     WiFiManagement::addToDebugLog("# Tare done.");
@@ -101,12 +106,16 @@ void Alkomat::calibrateScale(int knownWeight)
 
     WiFiManagement::addToDebugLog(("# Place the known Weight of " + String(knownWeight) + "g on the scale."));
     Serial.println(("# Place the known Weight of " + String(knownWeight) + "g on the scale."));
-    delay(5000);
 
-    long result = readAverageScale();
+    delay(7000);
+
+    DebugPrintln("Reading Weight...");
+    result = readAverageScale();
     WiFiManagement::addToDebugLog("# Result: " + String(result) + "\n# Calibration Factor: " + String(result / knownWeight));
-    Serial.println("# Result: " + String(result) + "\n# Calibration Factor: " + String(result / knownWeight));
+    Serial.println("\n# Result: " + String(result) + "\n# Calibration Factor: " + String(result / knownWeight));
 
+
+    DebugPrintln("Set scale...");
     scale.set_scale(result / knownWeight);
 
     WiFiManagement::addToDebugLog("=== Calibration Done ===");
