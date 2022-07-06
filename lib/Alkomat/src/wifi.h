@@ -29,7 +29,8 @@ namespace WiFiManagement
     void initWifi();
     void initWebServer();
     void notFound(AsyncWebServerRequest *request);
-
+    void addToDebugLog(String log);
+    void debugLogHousekeeping();
 
 }
 

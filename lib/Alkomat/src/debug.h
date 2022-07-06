@@ -18,7 +18,7 @@
         Serial.print(' ');      \
         Serial.print(__LINE__);     \
         Serial.print(' ');      \
-        Serial.println(__VA_ARGS__)
+        Serial.println(__VA_ARGS__) 
     #define DebugTest Serial.println("DEBUG IS ENABLED");
 #else
   #define DebugPrint(...)

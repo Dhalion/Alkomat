@@ -18,12 +18,26 @@
 #include <movingAvg.h>                  // https://github.com/JChristensen/movingAvg
 
 #include "debug.h"
+#include "cppQueue.h"
 
 
 
 #define LOADCELL_DOUT_PIN D2
 #define LOADCELL_SCK_PIN D3
 #define ROLLING_AVG_N   5
+
+// Command codes to place in queue
+enum CommandType {
+    calibrate
+};
+
+struct Command {
+    CommandType type;
+    int int_parm;
+};
+
+
+
 
 
 /**============================================
@@ -32,8 +46,11 @@
 
 namespace Alkomat {
     void initScale();
+    void handle();
+    void addCommandToQueue(Command command);
     long readScale();
     long readAverageScale();
+    void calibrateScale(int knownWeight);
 
 }
 

@@ -9,6 +9,7 @@ using namespace WiFiManagement;
 
 
 AsyncWebServer server(80);
+DynamicJsonDocument logStream(8192);
 
 
 void WiFiManagement::initWifi(){
@@ -51,6 +52,38 @@ void WiFiManagement::initWebServer(){
         request->send(200, "application/json", json);
     });
 
+
+    server.on("/log", HTTP_GET, [](AsyncWebServerRequest *request){
+        String json;
+        serializeJson(logStream, json);
+        request->send(200, "application/json", json);
+        // Flush the log when transmitted
+        logStream.clear();
+    });
+
+
+    server.on("/calibration", HTTP_ANY, [](AsyncWebServerRequest *request){
+
+        for (int i = 0; i < request->params(); i++) {
+            AsyncWebParameter *p = request->getParam(i);
+            String p_name = p->name();
+
+            if (p_name == "mass") {
+                addToDebugLog("Calibrating with mass of " + p->value() + "g");
+                Serial.println("Calibrating with mass of " + p->value() + "g");
+                // Alkomat::calibrateScale(p->value().toInt());  //! Not possible with AsyncWebServer
+
+                //* Push Comand to Queue instead 
+                Alkomat::addCommandToQueue({CommandType::calibrate, p->value().toInt()});
+                DebugPrintln("# Added Calibration command to Queue.");
+            }
+        }
+
+
+        request->send(200);
+
+    });
+
     /**
      ** =============================================================*/
 
@@ -65,4 +98,19 @@ void WiFiManagement::initWebServer(){
 
 void WiFiManagement::notFound(AsyncWebServerRequest *request) {
     request->send(404, "text/plain", "Not found");
+}
+
+
+
+void WiFiManagement::addToDebugLog(String log){
+    JsonObject logObj = logStream.createNestedObject();
+    logObj["timestamp"] = millis();
+    logObj["message"] = log;
+}
+
+void WiFiManagement::debugLogHousekeeping(){
+    // This is a hard limit
+    if (logStream.size() > 1000) {
+        logStream.clear();
+    }
 }
