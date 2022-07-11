@@ -32,9 +32,22 @@ enum CommandType {
     calibrate
 };
 
-struct Command {
+
+enum drinkType_t {
+    water,
+    cola,
+    wodka
+};
+
+struct Command_t {
     CommandType type;
     int int_parm;
+};
+
+struct Valve_t {
+    int id;
+    bool state;
+    drinkType_t drinkType;
 };
 
 
@@ -48,11 +61,13 @@ struct Command {
 namespace Alkomat {
     void initScale();
     void handle();
-    void addCommandToQueue(Command command);
+    void addCommandToQueue(Command_t command);
     long readScale();
     long readAverageScale();
     void calibrateScale(int knownWeight);
-
+    void fill(int amount);
+    void setValve(Valve_t v, bool state);
+    void testValveFunctions();
 }
 
 

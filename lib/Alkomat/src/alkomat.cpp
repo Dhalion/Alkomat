@@ -6,7 +6,10 @@ using namespace Alkomat;
 
 HX711 scale;
 movingAvg averageReading(ROLLING_AVG_N);
-cppQueue commandQueue(sizeof(Command), 10, FIFO); // Instanciate the command queue
+cppQueue commandQueue(sizeof(Command_t), 10, FIFO); // Instanciate the command queue
+
+// This is the Demo valve for Debugging purposes
+Valve_t testValve{0, false, drinkType_t::water};
 
 void Alkomat::initScale()
 {
@@ -34,7 +37,7 @@ long Alkomat::readAverageScale()
 
 void Alkomat::handle()
 {
-    Command cmd;
+    Command_t cmd;
     if (!commandQueue.isEmpty())
     {
         // Execute command(s)
@@ -76,7 +79,7 @@ void Alkomat::handle()
     }
 }
 
-void Alkomat::addCommandToQueue(Command command)
+void Alkomat::addCommandToQueue(Command_t command)
 {
     if (!commandQueue.isFull())
     {
@@ -114,10 +117,52 @@ void Alkomat::calibrateScale(int knownWeight)
     WiFiManagement::addToDebugLog("# Result: " + String(result) + "\n# Calibration Factor: " + String(result / knownWeight));
     Serial.println("\n# Result: " + String(result) + "\n# Calibration Factor: " + String(result / knownWeight));
 
-
     DebugPrintln("Set scale...");
     scale.set_scale(result / knownWeight);
 
     WiFiManagement::addToDebugLog("=== Calibration Done ===");
     Serial.println("=== Calibration Done ===");
+}
+
+void Alkomat::fill(int amount)
+{
+    // open valve and pour given amount of liquid
+
+    long _startWeight, _currentWeight, _endWeight;
+
+    _startWeight = Alkomat::readAverageScale();
+
+    //* Open valve
+    setValve(testValve, true);
+
+    while (_startWeight < _endWeight)
+    {
+        ;
+        ;
+        // Keep open
+    }
+
+    //* Close valve
+    setValve(testValve, false);
+
+    // Done
+}
+
+void Alkomat::testValveFunctions()
+{
+    // Quick check if valve functions properly
+    DebugPrintln("Check if valve functions properly...");
+    setValve(testValve, true);
+    delay(2000);
+    setValve(testValve, false);
+    DebugPrintln("Valve check done.");
+
+}
+
+void Alkomat::setValve(Valve_t v, bool state)
+{
+    //* Opens/Closes a valve. Simulate this by setting onboard LED HIGH/LOW
+
+    digitalWrite(LED_BUILTIN, !state);
+    DebugPrintln("Set valve to: " + !state);
 }

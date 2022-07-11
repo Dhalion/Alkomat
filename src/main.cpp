@@ -11,6 +11,9 @@ void setup()
 	WiFiManagement::initWifi();
 	Alkomat::initScale();
 	WiFiManagement::addToDebugLog("Starting...");
+	pinMode(LED_BUILTIN, OUTPUT);
+
+	Alkomat::testValveFunctions();
 }
 
 void loop()
